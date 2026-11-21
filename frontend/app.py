@@ -94,6 +94,16 @@ if uploaded_file is not None:
                 batch_df = pd.read_csv(io.BytesIO(file_bytes))
                 batch_df["Predicted_Sales"] = [results.get(str(i)) for i in range(len(batch_df))]
                 st.dataframe(batch_df, use_container_width=True)
+
+                # Download of the predictions as a CSV file (with on_click="ignore" the application is not re-run
+                # by the download, so the table stays on the screen)
+                st.download_button(
+                    "Download predictions as CSV",
+                    data=batch_df.to_csv(index=False).encode("utf-8"),
+                    file_name="superkart_batch_predictions.csv",
+                    mime="text/csv",
+                    on_click="ignore",
+                )
             else:
                 st.error(f"The prediction API returned an error ({response.status_code}): {response.text}")
         except requests.exceptions.RequestException:
